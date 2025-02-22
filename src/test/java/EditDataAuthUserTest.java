@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import io.restassured.response.ValidatableResponse;
 import model.User;
 import net.datafaker.Faker;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +17,22 @@ import static org.apache.http.HttpStatus.SC_OK;
 public class EditDataAuthUserTest {
     private User user;
     private UserClient userClient;
+    String token;
 
     @Before
     public void setUp() {
         userClient = new UserClient();
         user = UserGenerator.getRandom();
+        token = userClient.create(user).extract().path("accessToken");
+    }
+
+    @After
+    public void tearDown() {
+        userClient.deleteUser(token);
     }
 
     @Test
     public void editNameAuthUserTest() {
-        String token = userClient.create(user).extract().path("accessToken");
         UserDataJson body = new UserDataJson(new Faker().name().firstName(), null, null);
         ValidatableResponse response = userClient.editData(body, token);
         HashMap<String, String> userInfo = response.extract().path("user");
@@ -40,7 +47,6 @@ public class EditDataAuthUserTest {
 
     @Test
     public void editEmailAuthUserTest() {
-        String token = userClient.create(user).extract().path("accessToken");
         UserDataJson body = new UserDataJson(null, new Faker().internet().emailAddress(), null);
         ValidatableResponse response = userClient.editData(body, token);
         HashMap<String, String> userInfo = response.extract().path("user");

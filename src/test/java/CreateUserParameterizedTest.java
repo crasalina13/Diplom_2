@@ -1,5 +1,6 @@
 import io.restassured.response.ValidatableResponse;
 import model.User;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,7 @@ public class CreateUserParameterizedTest {
     private final int statusCode;
     private final String message;
     private UserClient userClient;
+    private String token;
 
     public CreateUserParameterizedTest(User user, int statusCode, String message) {
         this.user = user;
@@ -39,9 +41,15 @@ public class CreateUserParameterizedTest {
         userClient = new UserClient();
     }
 
+    @After
+    public void tearDown() {
+        if(token != null) userClient.deleteUser(token);
+    }
+
     @Test
     public void userCreatedAllFieldsAndWithoutPasswordAndWithoutNameAndWithoutEmailTest() {
         ValidatableResponse response = userClient.create(user);
+        token = response.extract().path("accessToken");
         Assert.assertEquals(statusCode, response.extract().statusCode());
         Assert.assertEquals(message, response.extract().path("message"));
     }

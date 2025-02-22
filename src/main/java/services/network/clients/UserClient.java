@@ -43,4 +43,14 @@ public class UserClient extends RestAssuredClient {
                 .patch(Endpoints.USER_PATH.getPath())
                 .then();
     }
+
+    @Step("Delete user")
+    public void deleteUser(String bearerToken) {
+        given()
+                .spec(getBaseSpec())
+                .headers("Authorization", bearerToken)
+                .when()
+                .delete(Endpoints.USER_PATH.getPath())
+                .then();
+    }
 }

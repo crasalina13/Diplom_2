@@ -28,6 +28,7 @@ public class CreateOrderTest {
         IngredientsDataJson body = new IngredientsDataJson("test");
         ValidatableResponse response = orderClient.create(body, token);
         Assert.assertEquals(SC_INTERNAL_SERVER_ERROR, response.extract().statusCode());
+        userClient.deleteUser(token);
     }
 
     @Test

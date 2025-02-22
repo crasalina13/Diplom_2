@@ -28,6 +28,7 @@ public class GetOrderTest {
         ValidatableResponse response = orderClient.get(token);
         Assert.assertEquals(SC_OK, response.extract().statusCode());
         Assert.assertTrue(response.extract().path("success"));
+        userClient.deleteUser(token);
     }
 
     @Test

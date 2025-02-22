@@ -1,5 +1,6 @@
 import io.restassured.response.ValidatableResponse;
 import model.User;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class CreateOrderAuthUserParameterizedTest {
     private final Boolean success;
     private OrderClient orderClient;
     private UserClient userClient;
-    private User user;
+    private String token;
 
     public CreateOrderAuthUserParameterizedTest(IngredientsDataJson body, int code, String message, Boolean success) {
         this.body = body;
@@ -41,13 +42,18 @@ public class CreateOrderAuthUserParameterizedTest {
     @Before
     public void setUp() {
         userClient = new UserClient();
-        user = UserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         orderClient = new OrderClient();
+        token = userClient.create(user).extract().path("accessToken");
+    }
+
+    @After
+    public void tearDown() {
+        userClient.deleteUser(token);
     }
 
     @Test
     public void createOrderAuthUserWithAndWithoutIngridientsTest() {
-        String token = userClient.create(user).extract().path("accessToken");
         ValidatableResponse response = orderClient.create(body, token);
         Assert.assertEquals(response.extract().statusCode(), code);
         Assert.assertSame(response.extract().path("success"), success);
