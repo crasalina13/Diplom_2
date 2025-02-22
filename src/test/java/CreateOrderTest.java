@@ -1,7 +1,14 @@
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import services.network.clients.OrderClient;
+import services.network.clients.UserClient;
+import services.network.dto.IngredientsDataJson;
+import utils.UserGenerator;
+
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
 public class CreateOrderTest {
     private OrderClient orderClient;
@@ -11,22 +18,22 @@ public class CreateOrderTest {
     @Before
     public void setUp() {
         userClient = new UserClient();
-        user = User.getRandom();
+        user = UserGenerator.getRandom();
         orderClient = new OrderClient();
     }
 
     @Test
     public void createOrderAuthUserWithWrongHashIngridientTest() {
         String token = userClient.create(user).extract().path("accessToken");
-        IngridientsDataJson body = new IngridientsDataJson("test");
+        IngredientsDataJson body = new IngredientsDataJson("test");
         ValidatableResponse response = orderClient.create(body, token);
-        Assert.assertEquals(500, response.extract().statusCode());
+        Assert.assertEquals(SC_INTERNAL_SERVER_ERROR, response.extract().statusCode());
     }
 
     @Test
     public void createOrderNotAuthUserWithWrongHashIngridientTest() {
-        IngridientsDataJson body = new IngridientsDataJson("test");
+        IngredientsDataJson body = new IngredientsDataJson("test");
         ValidatableResponse response = orderClient.create(body);
-        Assert.assertEquals(500, response.extract().statusCode());
+        Assert.assertEquals(SC_INTERNAL_SERVER_ERROR, response.extract().statusCode());
     }
 }

@@ -1,9 +1,15 @@
 import io.restassured.response.ValidatableResponse;
+import model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import services.network.clients.UserClient;
+import utils.UserGenerator;
+
+import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.apache.http.HttpStatus.SC_OK;
 
 @RunWith(Parameterized.class)
 public class CreateUserParameterizedTest {
@@ -18,13 +24,13 @@ public class CreateUserParameterizedTest {
         this.message = message;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "StatusCode: {1}, Message: {2}")
     public static Object[][] getUserInfo() {
         return new Object[][]{
-                {User.getRandom(), 200, null},
-                {User.getWithEmailAndNameOnly(), 403, "Email, password and name are required fields"},
-                {User.getWithEmailAndPasswordOnly(), 403, "Email, password and name are required fields"},
-                {User.getWithNameAndPasswordOnly(), 403, "Email, password and name are required fields"}
+                {UserGenerator.getRandom(), SC_OK, null},
+                {UserGenerator.getWithEmailAndNameOnly(), SC_FORBIDDEN, "Email, password and name are required fields"},
+                {UserGenerator.getWithEmailAndPasswordOnly(), SC_FORBIDDEN, "Email, password and name are required fields"},
+                {UserGenerator.getWithNameAndPasswordOnly(), SC_FORBIDDEN, "Email, password and name are required fields"}
         };
     }
 

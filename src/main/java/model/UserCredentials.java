@@ -1,3 +1,5 @@
+package model;
+
 public class UserCredentials {
 
     public String email;
@@ -9,6 +11,6 @@ public class UserCredentials {
     }
 
     public static UserCredentials from(User user) {
-        return new UserCredentials(user.email, user.password);
+        return new UserCredentials(user.getEmail(), user.getPassword());
     }
 }
